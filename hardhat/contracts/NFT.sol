@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./ERC721A.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFT is ERC721Enumerable, Ownable {
+contract NFT is ERC721A, Ownable {
     using Counters for Counters.Counter;
     using Strings for uint256;
     Counters.Counter private s_tokenIds;
@@ -29,7 +29,7 @@ contract NFT is ERC721Enumerable, Ownable {
         uint256 _maxSupply,
         uint256 _maxMintAmount,
         string memory _baseURI
-    ) ERC721(_name, _symbol) {
+    ) ERC721A(_name, _symbol, 10_000) {
         s_cost = _cost;
         s_maxSupply = _maxSupply;
         s_maxMintAmount = _maxMintAmount;
@@ -53,16 +53,17 @@ contract NFT is ERC721Enumerable, Ownable {
         uint256 supply = s_tokenIds.current();
         uint256 tokenId;
 
-        for (uint256 i; i < _mintAmount; i++) {
-            tokenId = supply + i;
+        // for (uint256 i; i < _mintAmount; i++) {
+        //     tokenId = supply + i;
 
-            while (_exists(tokenId)) {
-                tokenId++;
-            }
+        //     while (_exists(tokenId)) {
+        //         tokenId++;
+        //     }
 
-            _mint(msg.sender, tokenId);
-            s_totalSupply++;
-        }
+        //     _mint(msg.sender, tokenId);
+        //     s_totalSupply++;
+        // }
+        _safeMint(msg.sender,_mintAmount);
         emit Mint(_mintAmount, msg.sender, tokenId);
     }
 
