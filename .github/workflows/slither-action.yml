@@ -6,6 +6,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: hardhat
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
