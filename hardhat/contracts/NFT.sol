@@ -50,7 +50,7 @@ contract NFT is ERC721A, Ownable {
             "Ether value sent is not correct for mint amount"
         );
 
-        uint256 supply = s_tokenIds.current();
+        // uint256 supply = s_tokenIds.current();
         uint256 tokenId;
 
         // for (uint256 i; i < _mintAmount; i++) {
@@ -64,6 +64,7 @@ contract NFT is ERC721A, Ownable {
         //     s_totalSupply++;
         // }
         _safeMint(msg.sender,_mintAmount);
+        s_totalSupply += _mintAmount;
         emit Mint(_mintAmount, msg.sender, tokenId);
     }
 

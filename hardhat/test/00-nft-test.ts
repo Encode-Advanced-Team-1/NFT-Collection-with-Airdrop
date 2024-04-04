@@ -14,7 +14,7 @@ describe("NFT", () => {
   const SYMBOL = "DPX";
   const COST = ether(10);
   const MAX_SUPPLY = 10000;
-  const MAX_AMOUNT = 10;
+  const MAX_AMOUNT = 50;
   const BASE_URI = "ipfs://QmQ2jnDYecFhrf3asEWjyjZRX1pZSsNWG3qHzmNDvXa9qg/";
 
   let nft: any;
@@ -130,7 +130,7 @@ describe("NFT", () => {
       });
 
       it("rejects if the MAX_AMOUNT is exceeded", async () => {
-        await expect(nft.connect(minter).mint(11, { value: ether(110) })).to.be
+        await expect(nft.connect(minter).mint((MAX_AMOUNT+1), { value: COST.mul(MAX_AMOUNT+1) })).to.be
           .reverted;
       });
 
@@ -142,7 +142,7 @@ describe("NFT", () => {
 
   describe("NFT Batch Minting", () => {
     let transaction: any, result: any;
-    let totalMint = 5;
+    let totalMint = 50;
 
     describe("Success", () => {
       beforeEach(async () => {
@@ -178,7 +178,8 @@ describe("NFT", () => {
 
       it("updates the contract balance", async () => {
         expect(await ethers.provider.getBalance(nft.address)).to.equal(
-          ethers.utils.parseEther("50")
+          // ethers.utils.parseEther("50")
+          COST.mul(totalMint)
         );
       });
 
@@ -211,7 +212,7 @@ describe("NFT", () => {
       });
 
       it("rejects if the MAX_AMOUNT is exceeded", async () => {
-        await expect(nft.connect(minter).mint(11, { value: ether(110) })).to.be
+        await expect(nft.connect(minter).mint((MAX_AMOUNT+1), { value: COST.mul(MAX_AMOUNT+1) })).to.be
           .reverted;
       });
 
@@ -223,10 +224,11 @@ describe("NFT", () => {
 
   describe("Displaying NFTs", () => {
     let transaction: any, result;
+    let totalNftsToMint = 10;
     beforeEach(async () => {
       transaction = await nft
         .connect(minter)
-        .mint(3, { value: ethers.utils.parseEther("30") });
+        .mint(totalNftsToMint, { value: COST.mul(totalNftsToMint) });
       result = await transaction.wait();
     });
 
@@ -234,8 +236,8 @@ describe("NFT", () => {
       const [tokenIds, tokenURIs] = await nft.getWalletOwner(minter.address);
       console.log(tokenIds);
 
-      expect(tokenIds.length).to.equal(3);
-      expect(tokenURIs.length).to.equal(3);
+      expect(tokenIds.length).to.equal(totalNftsToMint);
+      expect(tokenURIs.length).to.equal(totalNftsToMint);
       for (let i = 0; i < tokenIds.length; i++) {
         expect(await nft.ownerOf(tokenIds[i])).to.equal(minter.address);
         expect(await nft.tokenURI(tokenIds[i])).to.equal(
