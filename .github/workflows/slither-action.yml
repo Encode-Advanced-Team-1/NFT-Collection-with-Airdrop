@@ -15,6 +15,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          ls -al
           make install
 
       - name: Run Slither
