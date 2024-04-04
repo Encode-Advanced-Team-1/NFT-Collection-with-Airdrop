@@ -151,6 +151,7 @@ describe("NFT", () => {
         });
         result = await transaction.wait();
         // console.log(result);
+        printGasUsed(totalMint, result);
       });
 
       it("mints a token and updates the total supply", async () => {
@@ -224,20 +225,21 @@ describe("NFT", () => {
 
   describe("Displaying NFTs", () => {
     let transaction: any, result;
-    let totalNftsToMint = 10;
+    let totalMint = 10;
     beforeEach(async () => {
       transaction = await nft
         .connect(minter)
-        .mint(totalNftsToMint, { value: COST.mul(totalNftsToMint) });
+        .mint(totalMint, { value: COST.mul(totalMint) });
       result = await transaction.wait();
+      printGasUsed(totalMint, result);
     });
 
     it("returns an array of token IDs owned by the minter", async () => {
       const [tokenIds, tokenURIs] = await nft.getWalletOwner(minter.address);
       console.log(tokenIds);
 
-      expect(tokenIds.length).to.equal(totalNftsToMint);
-      expect(tokenURIs.length).to.equal(totalNftsToMint);
+      expect(tokenIds.length).to.equal(totalMint);
+      expect(tokenURIs.length).to.equal(totalMint);
       for (let i = 0; i < tokenIds.length; i++) {
         expect(await nft.ownerOf(tokenIds[i])).to.equal(minter.address);
         expect(await nft.tokenURI(tokenIds[i])).to.equal(
@@ -256,6 +258,7 @@ describe("NFT", () => {
       beforeEach(async () => {
         transaction = await nft.connect(minter).mint(1, { value: COST });
         result = await transaction.wait();
+        printGasUsed(1, result);
 
         balanceBefore = await ethers.provider.getBalance(deployer.address);
 
@@ -285,4 +288,8 @@ describe("NFT", () => {
       });
     });
   });
+
+  const printGasUsed = (totalMint:number, result:any) => {
+    console.log(`\tgas to mint ${totalMint} NFTs:`, result.gasUsed.toString());
+  }
 });
